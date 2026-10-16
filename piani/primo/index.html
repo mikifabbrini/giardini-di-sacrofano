@@ -266,7 +266,7 @@ const controls=new THREE.OrbitControls(camera,renderer.domElement);
 controls.enableDamping=true; controls.dampingFactor=.08; controls.maxPolarAngle=Math.PI*0.47; controls.minDistance=8; controls.maxDistance=innerWidth<720?92:62; controls.addEventListener('change',()=>{const t=controls.target;const cx=Math.max(-24,Math.min(22,t.x)),cy=Math.max(0,Math.min(8,t.y)),cz=Math.max(-14,Math.min(16,t.z));if(cx!==t.x||cy!==t.y||cz!==t.z){const d=new THREE.Vector3(cx-t.x,cy-t.y,cz-t.z);t.add(d);camera.position.add(d);}});
 const hemi=new THREE.HemisphereLight(0xffffff,0xb9bdb4,0.75); scene.add(hemi);
 const sun=new THREE.DirectionalLight(0xffffff,0.75); sun.position.set(-30,55,35); sun.castShadow=true;
-sun.shadow.mapSize.set(SITO.leggero?1024:2048,SITO.leggero?1024:2048); Object.assign(sun.shadow.camera,{left:-50,right:50,top:50,bottom:-50,near:1,far:200}); sun.shadow.bias=-0.00035;sun.shadow.normalBias=.025; scene.add(sun);
+sun.shadow.mapSize.set(SITO.leggero?1024:2048,SITO.leggero?1024:2048); Object.assign(sun.shadow.camera,{left:-50,right:50,top:50,bottom:-50,near:1,far:200}); sun.shadow.bias=-0.0002;sun.shadow.normalBias=.06; /* 16/10: meno strisce d ombra (acne) sui muri e sui gradini, soprattutto con la luna bassa della Sera */ scene.add(sun);
 
 const PAL={
   A:{bg:0xdce7eb,ground:0x819167,site:0xa7a292,wall:0xd8d4c7,cap:0x33422e,slab:0xbdb9ad,low:0xe1dccf,fill:0x19c37d,fillOp:.16,ext:0x9dbf9f,extOp:.28,led:0x12a56a,halo:0x19c37d,haloOp:.22,sold:0xd83a3a,rent:0xf2b705,roof:0x956447,win:0x070504,winE:0x000000,hemi:.75,sun:.75},
@@ -1232,6 +1232,6 @@ new Promise(r=>{let fatto=false;const go=()=>{if(fatto||SITO.pagina==='contatti'
 }).catch(err=>{ $("#ctx").innerHTML=`<h1>Modello non caricato</h1><p>Il file model.json non è raggiungibile (${err.message}). Apri il file index.html nella cartella completa fase3-astra/prototipo.</p>`; });
 </script>
 
-<script src="apertura/apertura.js?v=p74"></script>
+<script src="apertura/apertura.js?v=p75"></script><script src="veloce.js?v=3"></script>
 <script src="foto.js?v=p2"></script>
 </html>

@@ -158,7 +158,7 @@ vediPiano.camino2=()=>{const via=[];LV['2'].grp.traverse(o=>{if(!o.isMesh||!o.vi
 // PIANTA DAL DWG (Michele 16/10): quando si apre un piano, i muri del rendering lasciano il posto ai muri ricavati
 // dalle linee del DWG (pianta/pianta_<livello>.json, generata con pianta/gen.py), tagliati a 1,10 m come una pianta,
 // con finestre, scale e nomi dei vani. Il rendering resta com'e'.
-const PIANTE={},TAGLIO=1.1;
+const PIANTE={},TAGLIO=1.1;window.PIANTE=PIANTE; /* veloce.js aspetta le piante prima di fondere i pezzi */
 const piantaDWG=id=>{if(PIANTE[id]||!LV[id])return;PIANTE[id]='carica';
  fetch('pianta/pianta_'+id+'.json?v=10').then(r=>r.json()).then(P=>{const L=LV[id],G=new THREE.Group();G.name='piantaDWG';
   const forma=r=>{const sh=new THREE.Shape(r[0].map(([x,z])=>new THREE.Vector2(x,-z)));for(const h of r.slice(1))sh.holes.push(new THREE.Path(h.map(([x,z])=>new THREE.Vector2(x,-z))));return sh;};
