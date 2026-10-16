@@ -84,7 +84,7 @@ function uvFoto(mesh,lato){ // UV per faccia come in Blender: muri (lungo il mur
    if(Math.abs(n.y)>.97){u=w.x;v=w.z;}else if(Math.abs(n.y)>.05){h.crossVectors(Z,n).normalize();d.crossVectors(n,h).normalize();u=w.dot(h);v=w.dot(d);}else{h.crossVectors(Z,n).normalize();u=w.dot(h);v=w.y;}
    uv[(i+k)*2]=u/lato;uv[(i+k)*2+1]=v/lato;}}
  g.setAttribute('uv',new THREE.BufferAttribute(uv,2));g.computeVertexNormals();g.userData.fotoUV=true;mesh.geometry=g;}
-async function applica(){const P_=()=>new Promise(r=>setTimeout(r,0)); // a pezzi: tra un pezzo e l'altro il browser fa andare l'apertura (14/10)
+async function applica(){const H_=!window.SITO||SITO.pagina==='home',L_=!!(window.SITO&&SITO.leggero); /* pagine separate e versione leggera (15/10) */const P_=()=>new Promise(r=>setTimeout(r,0)); // a pezzi: tra un pezzo e l'altro il browser fa andare l'apertura (14/10)
  // stessa luce e stesso colore finale del sito originale: cambiano solo i materialirenderer.toneMappingExposure=1.0;
  const hemi=scene.children.find(o=>o.isHemisphereLight),sun=scene.children.find(o=>o.isDirectionalLight);
  if(sun){sun.shadow.radius=3;}
@@ -98,10 +98,10 @@ async function applica(){const P_=()=>new Promise(r=>setTimeout(r,0)); // a pezz
  // tettoie: legno vero (Poly Haven stained_pine), un po' più chiaro del marrone scurissimo (Michele 12/10)
  const legno=new THREE.MeshStandardMaterial({map:tex('weathered_brown_planks','diff',true),normalMap:tex('weathered_brown_planks','nor'),roughnessMap:tex('weathered_brown_planks','rough'),roughness:1,metalness:0,color:0x8a8078});
  scene.traverse(o=>{if(o.isMesh&&!Array.isArray(o.material)&&o.material.color&&o.material.color.getHexString()==='0f0805')o.material=legno;});
- persiane();await P_();vetri();await P_();gronde();await P_();lampioni();await P_();ghiaia();await P_();ghiaia5();await P_();muro7();await P_();strisciaChiara();await P_();gradiniPietra();await P_();lastre();await P_();grigliati();await P_();cordoli();await P_();pratoSalita();await P_();muroConfine();await P_();murettoSalita();await P_();parcheggioOvest();await P_();pratoArmato();await P_();otto();await P_();scene.traverse(o=>{if(o.isMesh&&o.material&&o.material.color&&o.material.color.getHexString()==='3f5f3a')o.visible=false;});ciuffi();await P_();salita();await P_();fotinie();await P_();strisceVernice();await P_();
+ persiane();await P_();vetri();await P_();gronde();await P_();lampioni();await P_();ghiaia();await P_();ghiaia5();await P_();muro7();await P_();strisciaChiara();await P_();gradiniPietra();await P_();lastre();await P_();grigliati();await P_();cordoli();await P_();if(H_)pratoSalita();await P_();if(H_)muroConfine();await P_();if(H_)murettoSalita();await P_();if(H_)parcheggioOvest();await P_();if(H_)pratoArmato();await P_();otto();await P_();scene.traverse(o=>{if(o.isMesh&&o.material&&o.material.color&&o.material.color.getHexString()==='3f5f3a')o.visible=false;});if(H_&&!L_)ciuffi();await P_();if(H_)salita();await P_();if(H_)fotinie();await P_();if(H_)strisceVernice();await P_();
  const seguire=[...fatti.values()];
  const prima=renderer.render.bind(renderer);renderer.render=(s,c)=>{for(const nm of seguire){const m=nm.userData.orig;nm.opacity=m.opacity;nm.visible=m.visible;nm.transparent=m.transparent;}prima(s,c);};
- console.log('foto: materiali sostituiti su',n,'mesh');fuoriMura();await P_();vetrata8();await P_();porta5();await P_();dieci();await P_();dodici();await P_();buco1213();await P_();zoccolo12();await P_();cancellettiEntrata();await P_();paletti12();await P_();chiudiPortico12();await P_();granito();await P_();alberiVeri();await P_();parcheggi();await P_();if(!location.search.includes('nocielo'))cielo();await P_();notteInit();await P_();vistaVera();await P_();limitiVista();await P_();if(!location.search.includes('noott'))ottimizzaVerde();await P_();
+ console.log('foto: materiali sostituiti su',n,'mesh');fuoriMura();await P_();vetrata8();await P_();porta5();await P_();dieci();await P_();dodici();await P_();buco1213();await P_();zoccolo12();await P_();cancellettiEntrata();await P_();paletti12();await P_();chiudiPortico12();await P_();granito();await P_();if(H_)alberiVeri();await P_();if(H_)parcheggi();await P_();if(!location.search.includes('nocielo'))cielo();await P_();notteInit();await P_();if(H_)vistaVera();await P_();limitiVista();await P_();if(!location.search.includes('noott'))if(H_)ottimizzaVerde();await P_();
  const att=setInterval(()=>{if(_car>=_tot){clearInterval(att);setTimeout(togliVelo,400);}},250);}
 // ---- persiane e portoni come nel video IMG_5073: doghe orizzontali verniciate marrone scurissimo, con luce e ombra su ogni doga
 function persiane(){
@@ -1119,6 +1119,6 @@ function alberi(){
   const sp=new THREE.Sprite(sm[nome]);sp.center.set(.5,0);const [w,h]=DIM[nome];sp.scale.set(w*sc*1.02,h*sc*1.02,1);sp.position.set(x,y-.05,z);G.add(sp);}
 }
 // 14/10 sera (Michele): i materiali pesanti partono solo quando l'apertura ha finito scritta e logo, cosi la scritta resta fluida
-let libera=!document.getElementById('ap-intro')&&!window.__apIntro;addEventListener('ap-via-libera',()=>{libera=true;});setTimeout(()=>{libera=true;},20000);
+let libera=(!document.getElementById('ap-intro')&&!window.__apIntro)||!!window.__apLibera;addEventListener('ap-via-libera',()=>{libera=true;});setTimeout(()=>{libera=true;},20000);
 const t=setInterval(()=>{if(libera&&document.body.dataset.ready==='true'&&typeof scene!=='undefined'){clearInterval(t);setTimeout(applica,60);}},150);
 })();

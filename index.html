@@ -1,13 +1,21 @@
 <!doctype html>
 <html lang="it">
-<meta charset="utf-8">
-<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8"><meta name="robots" content="noindex,nofollow">
+<script>
+// Pagine separate (Michele 15/10): ogni pagina carica solo quello che le serve. SITO_PAGINA lo scrive la pagina stessa (piani/, piani/terra/ ...)
+window.SITO=Object.assign({pagina:'home',livello:null},window.SITO_PAGINA||{});
+// versione leggera automatica per telefoni e computer meno potenti (si forza con ?leggero=1 o ?leggero=0)
+(function(){const q=location.search.match(/leggero=([01])/);if(q){SITO.leggero=q[1]==='1';return;}
+ const ua=navigator.userAgent,apple=/iPhone|iPad|Macintosh/.test(ua),mem=navigator.deviceMemory||8,cpu=navigator.hardwareConcurrency||8;
+ let gpu='';try{const c=document.createElement('canvas').getContext('webgl'),e=c&&c.getExtension('WEBGL_debug_renderer_info');gpu=e?c.getParameter(e.UNMASKED_RENDERER_WEBGL):'';}catch(e){}
+ SITO.leggero=!apple&&(mem<=4||cpu<=4||/Mali|Adreno \(TM\) [1-6]|PowerVR|Intel\(R\) (HD|UHD) Graphics [1-6]|SwiftShader/i.test(gpu));SITO.gpu=gpu;})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>[FOTO] Giardini di Sacrofano · Studio Astra</title>
+<title>Giardini di Sacrofano</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
-<!-- 14/10 sera: le texture partono subito, mentre gira l'apertura --><link rel="preload" as="image" href="texture/vista/pano-giorno.webp?v=w1"><link rel="preload" as="image" href="texture/white_sandstone_bricks_03/diff.jpg"><link rel="preload" as="image" href="texture/white_sandstone_bricks_03/nor.jpg"><link rel="preload" as="image" href="texture/white_sandstone_bricks_03/rough.jpg"><link rel="preload" as="image" href="texture/clay_roof_tiles/diff.jpg"><link rel="preload" as="image" href="texture/clay_roof_tiles/nor.jpg"><link rel="preload" as="image" href="texture/clay_roof_tiles/rough.jpg"><link rel="preload" as="image" href="texture/grass_concrete_pavement/diff.jpg"><link rel="preload" as="image" href="texture/grass_concrete_pavement/nor.jpg"><link rel="preload" as="image" href="texture/grass_concrete_pavement/rough.jpg"><link rel="preload" as="image" href="texture/weathered_brown_planks/diff.jpg"><link rel="preload" as="image" href="texture/weathered_brown_planks/nor.jpg"><link rel="preload" as="image" href="texture/weathered_brown_planks/rough.jpg"><link rel="preload" as="image" href="texture/brick_wall_02/diff.jpg"><link rel="preload" as="image" href="texture/brick_wall_02/nor_gl.jpg"><link rel="preload" as="image" href="texture/gravel_floor_02/diff.jpg"><link rel="preload" as="image" href="texture/gravel_floor_02/nor_gl.jpg">
-<link rel="stylesheet" href="apertura/apertura.css?v=11">
+<!-- 14/10 sera: le texture partono subito, mentre gira l'apertura --><link rel="preload" as="image" crossorigin="anonymous" href="texture/vista/pano-giorno.webp?v=w1"><link rel="preload" as="image" crossorigin="anonymous" href="texture/white_sandstone_bricks_03/diff.jpg"><link rel="preload" as="image" crossorigin="anonymous" href="texture/white_sandstone_bricks_03/nor.jpg"><link rel="preload" as="image" crossorigin="anonymous" href="texture/white_sandstone_bricks_03/rough.jpg"><link rel="preload" as="image" crossorigin="anonymous" href="texture/clay_roof_tiles/diff.jpg"><link rel="preload" as="image" crossorigin="anonymous" href="texture/clay_roof_tiles/nor.jpg"><link rel="preload" as="image" crossorigin="anonymous" href="texture/clay_roof_tiles/rough.jpg"><link rel="preload" as="image" crossorigin="anonymous" href="texture/grass_concrete_pavement/diff.jpg"><link rel="preload" as="image" crossorigin="anonymous" href="texture/grass_concrete_pavement/nor.jpg"><link rel="preload" as="image" crossorigin="anonymous" href="texture/grass_concrete_pavement/rough.jpg"><link rel="preload" as="image" crossorigin="anonymous" href="texture/weathered_brown_planks/diff.jpg"><link rel="preload" as="image" crossorigin="anonymous" href="texture/weathered_brown_planks/nor.jpg"><link rel="preload" as="image" crossorigin="anonymous" href="texture/weathered_brown_planks/rough.jpg"><link rel="preload" as="image" crossorigin="anonymous" href="texture/brick_wall_02/diff.jpg"><link rel="preload" as="image" crossorigin="anonymous" href="texture/brick_wall_02/nor_gl.jpg"><link rel="preload" as="image" crossorigin="anonymous" href="texture/gravel_floor_02/diff.jpg"><link rel="preload" as="image" crossorigin="anonymous" href="texture/gravel_floor_02/nor_gl.jpg">
+<link rel="stylesheet" href="apertura/apertura.css?v=p2">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
 <style>
@@ -197,7 +205,7 @@ dialog{max-width:620px;width:calc(100vw - 32px);border:1px solid var(--line);bac
 <aside class="sheet" id="sheet" aria-label="Scheda appartamento"><div class="sh-in" id="sheetIn"></div></aside>
 <section class="listview" id="listview" aria-label="Elenco appartamenti"><div class="lv-in" id="lvIn"></div></section>
 <div class="note">Ricostruzione di progetto · <button id="about">Fonti e limiti</button></div>
-<dialog id="info"><button class="pill" id="infoClose">Chiudi</button><h2>Il progetto, con le sue fonti</h2><p>Disposizioni future dalle 14 schede; struttura dalla Tavola 2 e dalla geometria DWG. Fotografie e 25 video descrivono i lavori e aiutano a riconoscere materiali, accessi e contesto.</p><p>I livelli generali sono a 0, +2,90 e +5,95 m. La sistemazione del terreno, i dislivelli locali, parte delle falde e alcuni dettagli sono indicativi. Le superfici SUL delle schede non sono una misura dei poligoni del modello.</p><p>Il muro sul retro conserva un’altezza indicativa di 6,8 m. Il fabbricato B mantiene la posizione precedente. Lo stato commerciale di 13 e 14 resta quello delle schede, mentre la vista mostra finiture di progetto.</p><a href="registro.html" target="_blank" rel="noopener">Leggi il registro delle correzioni</a></dialog>
+<dialog id="info"><button class="pill" id="infoClose">Chiudi</button><h2>Il progetto, con le sue fonti</h2><p>Disposizioni future dalle 14 schede; struttura dalla Tavola 2 e dalla geometria DWG. Fotografie e 25 video descrivono i lavori e aiutano a riconoscere materiali, accessi e contesto.</p><p>I livelli generali sono a 0, +2,90 e +5,95 m. La sistemazione del terreno, i dislivelli locali, parte delle falde e alcuni dettagli sono indicativi. Le superfici SUL delle schede non sono una misura dei poligoni del modello.</p><p>Il muro sul retro conserva un’altezza indicativa di 6,8 m. La casa dell’appartamento 14 mantiene la posizione precedente. Lo stato commerciale di 13 e 14 resta quello delle schede, mentre la vista mostra finiture di progetto.</p><a href="registro.html" target="_blank" rel="noopener">Leggi il registro delle correzioni</a></dialog>
 
 <script src="vendor/three.min.js"></script>
 <script src="vendor/OrbitControls.js"></script>
@@ -232,9 +240,9 @@ const DUPLEX = {
 };
 const LEVELS = {
   "2":{name:"Piano secondo",short:"2",units:[11],desc:"Solo la zona notte dell'appartamento 11"},
-  "1":{name:"Piano primo",short:"1",units:[8,9,10,11,12,13],desc:"6 appartamenti"},
-  "T":{name:"Piano terra",short:"T",units:[1,2,3,4,5,6,7,12],desc:"7 appartamenti e l'ingresso del 12"},
-  "B":{name:"Fabbricato B",short:"B",units:[14],desc:"Corpo separato, appartamento 14"}
+  "1":{name:"Primo piano",short:"1",units:[8,9,10,11,12,13],desc:"6 appartamenti"},
+  "T":{name:"Piano terra",short:"T",units:[1,2,3,4,5,6,7,12,14],desc:"7 appartamenti, l'ingresso del 12 e l'appartamento 14"},
+  "B":{name:"Appartamento 14",short:"14",units:[14],desc:"Corpo separato, con giardino"}
 };
 const eur = v => "€ " + v.toLocaleString("it-IT");
 
@@ -246,7 +254,7 @@ try{ const d=localStorage.getItem("gs-dir"); if(d==="B") S.dir="B"; }catch(e){}
 // ---------- Scena ----------
 const host=$("#scene");
 const renderer=new THREE.WebGLRenderer({antialias:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));// leggerezza: sugli schermi Retina 1,5 invece di 2 (quasi la meta' dei pixel da disegnare)
+renderer.setPixelRatio(Math.min(devicePixelRatio,SITO.leggero?1:1.5));// leggerezza: sugli schermi Retina 1,5 invece di 2 (quasi la meta' dei pixel da disegnare)
 renderer.outputEncoding=THREE.sRGBEncoding;
 renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap; renderer.shadowMap.autoUpdate=false;// le ombre si ricalcolano solo quando qualcosa si muove (piani, sera/giorno), non a ogni fotogramma
 host.appendChild(renderer.domElement);
@@ -256,7 +264,7 @@ const controls=new THREE.OrbitControls(camera,renderer.domElement);
 controls.enableDamping=true; controls.dampingFactor=.08; controls.maxPolarAngle=Math.PI*0.47; controls.minDistance=8; controls.maxDistance=innerWidth<720?92:62; controls.addEventListener('change',()=>{const t=controls.target;const cx=Math.max(-24,Math.min(22,t.x)),cy=Math.max(0,Math.min(8,t.y)),cz=Math.max(-14,Math.min(16,t.z));if(cx!==t.x||cy!==t.y||cz!==t.z){const d=new THREE.Vector3(cx-t.x,cy-t.y,cz-t.z);t.add(d);camera.position.add(d);}});
 const hemi=new THREE.HemisphereLight(0xffffff,0xb9bdb4,0.75); scene.add(hemi);
 const sun=new THREE.DirectionalLight(0xffffff,0.75); sun.position.set(-30,55,35); sun.castShadow=true;
-sun.shadow.mapSize.set(2048,2048); Object.assign(sun.shadow.camera,{left:-50,right:50,top:50,bottom:-50,near:1,far:200}); sun.shadow.bias=-0.00035;sun.shadow.normalBias=.025; scene.add(sun);
+sun.shadow.mapSize.set(SITO.leggero?1024:2048,SITO.leggero?1024:2048); Object.assign(sun.shadow.camera,{left:-50,right:50,top:50,bottom:-50,near:1,far:200}); sun.shadow.bias=-0.00035;sun.shadow.normalBias=.025; scene.add(sun);
 
 const PAL={
   A:{bg:0xdce7eb,ground:0x819167,site:0xa7a292,wall:0xd8d4c7,cap:0x33422e,slab:0xbdb9ad,low:0xe1dccf,fill:0x19c37d,fillOp:.16,ext:0x9dbf9f,extOp:.28,led:0x12a56a,halo:0x19c37d,haloOp:.22,sold:0xd83a3a,rent:0xf2b705,roof:0x956447,win:0x070504,winE:0x000000,hemi:.75,sun:.75},
@@ -690,7 +698,7 @@ function openDuplex(n){
   duoEls.forEach(e=>{ const t=e.dataset.k==="lo"?D.lo_t:e.dataset.k==="hi"?D.hi_t:null; if(t) e.innerHTML=`<b>${t[0]}</b><span>${t[1]}</span>`; e.hidden=false; });
   stairGrp.visible=true; document.body.classList.add("duplex");
   refreshUnits(); renderCtx(); renderSheet(n); openSheet(); focusDuplex(-1);
-  try{history.replaceState(null,"","#apt-"+n)}catch(e){}
+  try{history.replaceState(null,"",location.pathname+location.search+"#apt-"+n)}catch(e){}
 }
 function focusDuplex(k){ // k=-1 entrambi i livelli, altrimenti indice della planimetria scelta
   if(!S.duplex) return; const n=S.duplex, D=DUPLEX[n];
@@ -711,7 +719,7 @@ function openApt(n,fromList){
   S.view="scheda"; S.apt=n; refreshUnits(); renderCtx(); renderSheet(n); openSheet();
   const o=(unitObjs[n]||[]).find(u=>u.lv===S.level)||unitObjs[n][0]; const y=LV[o.lv].base; const d=innerWidth<720?90:44;
   camTo([o.lp[0]+d*.1,y+d*1.1,o.lp[1]+d*.7],[o.lp[0],y,o.lp[1]],900); viewShift(...panelShift());
-  try{history.replaceState(null,"","#apt-"+n)}catch(e){}
+  try{history.replaceState(null,"",location.pathname+location.search+"#apt-"+n)}catch(e){}
 }
 function back(){ if(S.view==="scheda") openLevel(S.level); else if(S.view==="piano") showPiani(); else if(S.view==="piani") showEdificio(); }
 
@@ -748,12 +756,12 @@ function renderCtx(){
       <button class="cta" id="go">Esplora i piani</button>`;
     $("#go").onclick=showPiani;
   } else if(S.view==="piani"){
-    el.innerHTML=`<span class="eyebrow">Scegli un livello</span><h1>I piani</h1><div class="list">${["2","1","T","B"].map(id=>`<button class="row" data-l="${id}"><span class="k">${LEVELS[id].short}</span><span class="t"><b>${LEVELS[id].name}</b><span>${LEVELS[id].desc}</span></span><span class="r">›</span></button>`).join("")}</div><button class="back" id="bk">‹ Edificio intero</button>`;
+    el.innerHTML=`<span class="eyebrow">Scegli un livello</span><h1>I piani</h1><div class="list">${["1","T"].map(id=>`<button class="row" data-l="${id}"><span class="k">${LEVELS[id].short}</span><span class="t"><b>${LEVELS[id].name}</b><span>${LEVELS[id].desc}</span></span><span class="r">›</span></button>`).join("")}</div><button class="back" id="bk">‹ Edificio intero</button>`;
     el.querySelectorAll("[data-l]").forEach(b=>{b.onclick=()=>openLevel(b.dataset.l); b.onmouseenter=()=>hotLevel(b.dataset.l); b.onmouseleave=()=>hotLevel(null);});
     $("#bk").onclick=showEdificio;
   } else {
     const L=LEVELS[S.level];
-    el.innerHTML=`<span class="eyebrow">${S.level==="B"?"Fabbricato B":"Fabbricato A"}</span><h1>${L.name}</h1>
+    el.innerHTML=`<span class="eyebrow">${S.level==="B"?"Corpo separato":"Fabbricato A"}</span><h1>${L.name}</h1>
       <div class="list">${L.units.map(n=>{const a=APT[n]; return `<button class="row" data-n="${n}"><span class="k">${n}</span><span class="t"><b>${a.sold?"Venduto":a.tipo}</b><span>${a.duplex&&a.lv!==S.level?"Parte dell'appartamento su due livelli · ":""}${a.sold?"":(a.rent?"Immobile a reddito · ":"")+a.sul+" m² SUL · "+a.ext.map(e=>e[0].toLowerCase()+" "+e[1]+" m²").join(" + ")}${a.duplex?" · 2 livelli":""}</span></span><span class="r">${a.sold?'<span class="tag sold">Venduto</span>':(a.rent?'<span class="tag rent">A reddito</span><br>':'')+(a.opts?"da "+eur(a.opts[0].price):eur(a.price))}</span></button>`}).join("")}</div>
       <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><button class="back" id="bk">‹ Altri piani</button><span class="hint">Passa sui numeri per evidenziare</span></div>`;
     el.querySelectorAll("[data-n]").forEach(b=>{const n=+b.dataset.n; b.onclick=()=>openApt(n); b.onmouseenter=()=>setHot(n); b.onmouseleave=()=>setHot(null);});
@@ -782,12 +790,12 @@ function renderSheet(n){
      <div class="grp">${list.length>1?`<button class="sq" id="shPrev" aria-label="Appartamento precedente">‹ ${prev}</button><button class="sq" id="shNext" aria-label="Appartamento successivo">${next} ›</button>`:""}</div></div>`;
   let body;
   if(a.sold){
-    body=`<div class="sh-h"><span class="eyebrow">${lvName} · Fabbricato ${a.b}</span><h2>Appartamento ${n}</h2></div><div class="placeholder" style="border-color:var(--sold);color:var(--sold);font-weight:700;letter-spacing:.14em">VENDUTO</div>`;
+    body=`<div class="sh-h"><span class="eyebrow">${lvName}${a.b==="B"?"":" · Fabbricato "+a.b}</span><h2>Appartamento ${n}</h2></div><div class="placeholder" style="border-color:var(--sold);color:var(--sold);font-weight:700;letter-spacing:.14em">VENDUTO</div>`;
   } else {
     const o=a.opts?a.opts[optSel[n]]:null; const price=o?o.price:a.price; const stato=o?o.stato:a.stato;
     const extTot=a.ext.map(e=>`<div class="fig"><b>${e[1]}<small>m²</small></b><span>${e[0]}</span></div>`).join("");
     const figs=`<div class="fig"><b>${a.sul}<small>m²</small></b><span>SUL interna</span></div>${a.ext.length>1?`<div class="fig"><b>${a.ext.reduce((s,e)=>s+e[1],0)}<small>m²</small></b><span>${a.ext.map(e=>e[0]).join(" + ")}</span></div>`:extTot}<div class="fig"><b>${a.posto==="1"?"1":"1"}</b><span>Posto auto</span></div>`;
-    body=`<div class="sh-h"><span class="eyebrow">${lvName} · Fabbricato ${a.b}</span><h2>Appartamento <em>${n}</em></h2><p>${a.tipo}</p></div>
+    body=`<div class="sh-h"><span class="eyebrow">${lvName}${a.b==="B"?"":" · Fabbricato "+a.b}</span><h2>Appartamento <em>${n}</em></h2><p>${a.tipo}</p></div>
       ${a.rent?`<div class="rentbox"><b>Immobile a reddito</b><span>${a.stato}, come da scheda</span></div>`:""}
       <div class="figs">${figs}</div>
       ${a.opts?`<div><h3 class="s">Opzioni di offerta</h3><div class="seg opts" role="group" aria-label="Opzione di offerta">${a.opts.map((x,k)=>`<button data-o="${k}" aria-pressed="${k===optSel[n]}">${x.l}</button>`).join("")}</div></div>`:""}
@@ -1190,7 +1198,7 @@ addEventListener("resize",resize); resize();
 
 // ---------- Avvio ----------
 // apertura (14/10): la costruzione pesante parte quando la scritta e il logo hanno finito, cosi l'animazione non scatta
-new Promise(r=>{let fatto=false;const go=()=>{if(fatto)return;fatto=true;r(window.SACROFANO_MODEL);};go(); /* 14/10 sera: il caricamento parte subito, in parallelo con l'apertura */}).then(M=>{
+new Promise(r=>{let fatto=false;const go=()=>{if(fatto||SITO.pagina==='contatti')return;fatto=true;r(window.SACROFANO_MODEL);};go(); /* 14/10 sera: il caricamento parte subito, in parallelo con l'apertura */}).then(M=>{
   if(!M||!M.levels)throw new Error("Dati locali mancanti");
   MODEL=M;
   M.levels.forEach(L=>buildLevel(L.id,L,L.z));
@@ -1198,11 +1206,11 @@ new Promise(r=>{let fatto=false;const go=()=>{if(fatto)return;fatto=true;r(windo
   const pos=[]; M.site.forEach(([a,b])=>pos.push(a[0],0.02,a[1],b[0],0.02,b[1]));
   const g=new THREE.BufferGeometry(); g.setAttribute("position",new THREE.Float32BufferAttribute(pos,3));
   siteLines=new THREE.LineSegments(g,new THREE.LineBasicMaterial({color:0x9aa39b})); scene.add(siteLines);siteLines.visible=false;
-  if(M.landscape) buildLandscape(M.landscape);buildConnections(M);
+  if(M.landscape&&SITO.pagina==='home') buildLandscape(M.landscape);buildConnections(M);
   // Panorama illustrativo precedente conservato nel codice, non usato come vista reale.
   ground.material.map=TEX.grass;TEX.grass.repeat.set(45,45);
   Object.values(LV).forEach(L=>L.units.forEach(o=>{ if(o.lv==="2"&&o.n===11){} makeLabel(o); }));
-  ["2","1","T","B"].forEach(makeFloorLabel);
+  ["1","T"].forEach(makeFloorLabel);
   // scala interna degli appartamenti su due livelli (posizione impostata all'apertura)
   stairGrp=new THREE.Group(); stairGrp.visible=false; scene.add(stairGrp);
   stairMat=new THREE.MeshBasicMaterial({color:0x19c37d,transparent:true,opacity:0,depthWrite:false});
@@ -1213,11 +1221,15 @@ new Promise(r=>{let fatto=false;const go=()=>{if(fatto)return;fatto=true;r(windo
   applyDir();
   camera.position.set(30,40,82); controls.target.set(-5,0,14);
   const m=location.hash.match(/^#apt-(\d+)$/);
-  if(m&&APT[+m[1]]){ S.view="edificio"; renderCtx(); openApt(+m[1]); } else showEdificio();
+  // vista di partenza di ogni pagina
+  const qa=(location.search.match(/apt=(\d+)/)||[])[1]||(m&&m[1]);
+  if(SITO.pagina==='piani') showEdificio(); /* i piani si separano dopo i ritocchi dei materiali (i gradini dell'8 si misurano coi piani uniti) */
+  else if(SITO.pagina==='piano'){ openLevel(SITO.livello); if(qa&&APT[+qa]) openApt(+qa); }
+  else if(m&&APT[+m[1]]){ S.view="edificio"; renderCtx(); openApt(+m[1]); } else showEdificio();
   document.body.classList.toggle("reduced",S.reduced);document.body.dataset.ready="true";requestAnimationFrame(frame);
 }).catch(err=>{ $("#ctx").innerHTML=`<h1>Modello non caricato</h1><p>Il file model.json non è raggiungibile (${err.message}). Apri il file index.html nella cartella completa fase3-astra/prototipo.</p>`; });
 </script>
 
-<script src="apertura/apertura.js?v=14"></script>
-<script src="foto.js?v=m314"></script>
+<script src="apertura/apertura.js?v=p74"></script>
+<script src="foto.js?v=p2"></script>
 </html>

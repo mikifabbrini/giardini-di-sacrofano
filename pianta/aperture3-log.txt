@@ -1,0 +1,48 @@
+3 | S-3 | finestra | pianta DWG | [0.372, 1.372] | ok
+3 |  | finestra | pianta DWG | [1.372, 3.072] | ok
+3 | S-5 | porta | pianta DWG | [3.072, 4.272] | ok
+3 | S-6 | finestra | pianta DWG | [5.172, 5.722] | ok
+5 | S-8 | finestra | pianta DWG | [0.847, 1.697] | ok
+6 |  | finestra | pianta DWG | [0.724, 1.924] | ok
+8 | Accesso scala comune 11-12, conferma committente e IMG_4809 0-8s | porta | decisa | [0.28, 1.4] | ok
+16 |  | finestra | pianta DWG | [0.346, 1.446] | ok
+19 | S-11 | finestra | pianta DWG | [0.917, 2.767] | ok
+19 | S-14 | porta | pianta DWG | [3.407, 4.707] | ok
+27 | S-17 | porta | pianta DWG | [0.507, 1.807] | ok
+27 | S-19 | finestra | decisa | [2.455, 3.105] | ok
+28 |  | finestra | pianta DWG | [0.296, 1.296] | ok
+30 | S-24 | finestra | decisa | [0.895, 1.995] | ok
+34 | S-26 | finestra | decisa | [0.565, 1.665] | ok
+35 | E-porta-1 | porta | pianta DWG | [4.124, 5.124] | ok
+35 | E-2 | finestra | pianta DWG | [6.524, 7.524] | ok
+35 | E-3 | finestra | pianta DWG | [8.874, 9.924] | ok
+35 | E-porta-2 | porta | pianta DWG | [10.468, 11.624] | ok
+36 | S-28 | finestra | decisa | [0.93, 1.83] | ok
+38 | S-31 | finestra | decisa | [0.69, 1.59] | ok
+39 | E-5 | finestra | pianta DWG | [0.834, 1.934] | ok
+39 | E-porta-3 | porta | pianta DWG | [2.834, 3.934] | ok
+39 | E-porta-4 | porta | pianta DWG | [5.534, 6.634] | ok
+39 | E-9 | finestra | pianta DWG | [7.634, 8.584] | ok
+40 |  | finestra | pianta DWG | [1.412, 3.302] | ok
+40 | N-0 | finestra | scheda | [4.18, 5.33] | ok
+42 |  | finestra | pianta DWG | [3.757, 6.103] | ok
+44 | N-retro1-1 | finestra | pianta DWG | [1.662, 2.662] | ok
+44 | N-retro1-0 | finestra | pianta DWG | [4.212, 5.212] | ok
+45 | W-0 | porta | pianta DWG | [1.286, 2.586] | ok
+45 | W-2 | porta | pianta DWG | [3.086, 4.286] | ok
+45 | W-4 | finestra | pianta DWG | [4.786, 5.786] | ok
+45 | W-5 | finestra | pianta DWG | [6.886, 7.886] | ok
+45 | W-8 | porta | pianta DWG | [8.186, 9.086] | ok
+45 | W-10 | finestra | pianta DWG | [9.786, 10.486] | ok
+45 | W-12 | finestra | pianta DWG | [12.236, 13.236] | ok
+46 | W-13 | finestra | pianta DWG | [1.036, 2.136] | ok
+46 | W-15 | finestra | pianta DWG | [3.736, 4.436] | ok
+46 | W-17 | porta | pianta DWG | [4.936, 6.036] | ok
+47 | S-0 | finestra | pianta DWG | [1.347, 2.347] | ok
+B | 0 | B-prospetto1-1 | finestra | pianta DWG | [0.775, 1.897] | ok
+B | 0 | B-prospetto1-2 | porta | pianta DWG | [3.551, 4.553] | ok
+B | 0 | B-prospetto1-3 | porta | pianta DWG | [6.155, 7.157] | ok
+B | 0 | B-prospetto1-4 | finestra | pianta DWG | [9.56, 10.762] | ok
+B | 1 | B-forno-aperto | porta | pianta DWG | [0.044, 1.447] | ok
+B | 5 | Prospetti B 2/4 | finestra | pianta DWG | [0.647, 1.366] | ok
+B | 7 | Prospetti B 2/4 | finestra | pianta DWG | [0.916, 1.617] | ok
