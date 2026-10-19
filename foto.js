@@ -102,6 +102,7 @@ async function applica(){const H_=!window.SITO||SITO.pagina==='home',L_=!!(windo
  const seguire=[...fatti.values()];
  const prima=renderer.render.bind(renderer);renderer.render=(s,c)=>{for(const nm of seguire){const m=nm.userData.orig;nm.opacity=m.opacity;nm.visible=m.visible;nm.transparent=m.transparent;}prima(s,c);};
  console.log('foto: materiali sostituiti su',n,'mesh');fuoriMura();await P_();vetrata8();await P_();porta5();await P_();dieci();await P_();dodici();await P_();buco1213();await P_();zoccolo12();await P_();cancellettiEntrata();await P_();paletti12();await P_();chiudiPortico12();await P_();granito();await P_();if(H_)alberiVeri();await P_();if(H_)parcheggi();await P_();if(!location.search.includes('nocielo'))cielo();await P_();notteInit();await P_();if(H_)vistaVera();await P_();limitiVista();await P_();if(!location.search.includes('noott'))if(H_)ottimizzaVerde();await P_();
+ window.__fotoFatto=true;try{dispatchEvent(new Event('foto-fatto'));}catch(e){} /* 19/10: tutti i ritocchi finiti: ora si puo' fondere e tagliare */
  const att=setInterval(()=>{if(_car>=_tot){clearInterval(att);setTimeout(togliVelo,400);}},250);}
 // ---- persiane e portoni come nel video IMG_5073: doghe orizzontali verniciate marrone scurissimo, con luce e ombra su ogni doga
 function persiane(){

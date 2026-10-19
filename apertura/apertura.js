@@ -7,12 +7,14 @@ const g=window.gsap;if(g)g.ticker.lagSmoothing(0); // il rendering carica dietro
 let pronto=false, scena=1, entrato=false;
 // pagine separate (15/10): l'apertura completa solo sulla Home la prima volta; nelle altre pagine logo e "Ci siamo quasi" finche' carica
 const APT_ALL_INIZIO=(location.search.match(/apt=(\d+)/)||[])[1]||0;
-const PAG=(window.SITO&&SITO.pagina)||'home',LIV=window.SITO&&SITO.livello;
+const PAG=(window.SITO&&SITO.pagina)||'home';let LIV=window.SITO&&SITO.livello;
 let visto=false;try{visto=sessionStorage.getItem('gds-apertura')==='1';}catch(e){}
 const MODO=PAG==='contatti'?'nessuna':(PAG==='home'&&!visto&&!location.search.match(/(vista|park)=/)?'piena':'breve');
 const VAI=u=>{location.href=u;};
 const SLUG={T:'piani/terra/','1':'piani/primo/','2':'piani/primo/',B:'piani/terra/'};
 if(MODO!=='nessuna'){B.classList.add('ap-attiva');window.__apIntro=true;}
+// l'apertura c'e': il copri-pagina messo in testa alla pagina (ap-pre) non serve piu' (resta sotto l'apertura finche' c'e')
+setTimeout(()=>B.classList.add('ap-via'),MODO==='nessuna'?0:400);
 if(MODO==='breve')window.__apLibera=true;
 // finche' c'e' l'apertura il rendering dietro non si ridisegna a vuoto: la scheda video resta libera per la scritta
 const ferma=setInterval(()=>{if(!document.getElementById('ap-intro')){clearInterval(ferma);return;}if(window.RV)RV.forza=0;},100);
@@ -47,6 +49,7 @@ function scrivi(){window.__apW='inizio@'+Math.round(performance.now());
  // Michele 14/10: le lettere si scrivono una alla volta (I, g, i, a, r, d...), poi tutta la scritta si riempie; in tutto 5,5 secondi
  const L=[...intro.querySelectorAll('#ap-scritta tspan:not(.sp)')];
  L.forEach(t=>{let w=60;try{w=t.getComputedTextLength();}catch(e){} const d=Math.ceil(w*16+400);t.style.strokeDasharray=d;t.style.strokeDashoffset=d;t.dataset.d=d;});
+ $i('#ap-scritta').style.visibility='visible'; /* ora le lettere sono nascoste dal tratteggio: si puo' mostrare */
  if(ridotto||!g){L.forEach(t=>{t.style.strokeDashoffset=0;});testi.forEach(t=>t.style.fillOpacity=1);setTimeout(scena2,1200);return;}
  const SCRIVI=4.2,passo=SCRIVI/(L.length+1.2),durata=passo*2.2;
  const tl=g.timeline({onComplete:scena2});
@@ -115,12 +118,12 @@ function frase(){
 // ---------- pagine: i bottoni del rendering (Esplora i piani, i piani, gli appartamenti, indietro) portano alla pagina giusta ----------
 const _showPiani=showPiani,_openLevel=openLevel,_openApt=openApt,_showEdificio=showEdificio;
 if(PAG==='home'){showPiani=()=>VAI('piani/');openLevel=id=>VAI(SLUG[id]);openApt=n=>VAI(SLUG[lvApt(n)]+'?apt='+n);}
-if(PAG==='piani'){showEdificio=()=>VAI('./');openLevel=id=>VAI(SLUG[id]);openApt=n=>VAI(SLUG[lvApt(n)]+'?apt='+n);}
+if(PAG==='piani'){showEdificio=()=>VAI('./');}
 // singolo piano (Michele 15/10): la vista interna resta quella di prima (pianta con i muri tagliati), cambia solo dove stanno gli elementi, come nella divisione dei piani
 const vediPiano=id=>{_openLevel(id);
   if(id==='T'&&LV.B&&typeof fadeLevel==='function'){fadeLevel(LV.B,true);wallCut(LV.B,.42);slabShow(LV.B,false);} /* il 14 sta a terra accanto al piano terra, col suo giardino */
   Object.keys(LV).forEach(k=>{LV[k].grp.visible=k===id||(id==='T'&&k==='B');});
-  if(id!=='T')scene.traverse(o=>{if(o.isInstancedMesh)o.visible=false;});
+  scene.traverse(o=>{if(o.isInstancedMesh){if(id!=='T'){if(o.visible){o.visible=false;o.userData._nascPiano=1;}}else if(o.userData._nascPiano){o.visible=true;o.userData._nascPiano=0;}}}); /* siepi e cespugli solo col piano terra */
   if(id==='T'||id==='1')tettiScaleVia(id);
   if(id==='T'){piantaDWG('T');piantaDWG('B');}
   if(id==='B')piantaDWG('B');
@@ -131,7 +134,7 @@ const vediPiano=id=>{_openLevel(id);
   if(false){const via=[];LV['2'].grp.traverse(o=>{if(!o.isMesh||!o.visible)return;const b=new THREE.Box3().setFromObject(o),c=b.getCenter(new THREE.Vector3()),sz=b.getSize(new THREE.Vector3());if(Math.hypot(c.x+4.05,c.z-.15)<.7&&Math.max(sz.x,sz.z)<1.3)via.push(o);});via.forEach(o=>o.visible=false);console.log('camino 11 via',via.length);}
   // forno del 14 tagliato all'altezza dei muri della pianta: segue i muri del 14 (Michele 15/10)
   if((id==='T'||id==='B')&&LV.B&&LV.B.walls){const f=[];LV.B.grp.traverse(o=>{if(!o.isMesh||o.parent===LV.B.walls)return;const m=Array.isArray(o.material)?o.material[0]:o.material,b=new THREE.Box3().setFromObject(o);
-    if(m&&m.color&&m.color.getHexString()==='ededea'&&Math.abs(b.min.x-8.85)<.1&&Math.abs(b.max.z-31.27)<.1)f.push(o);});const W=LV.B.walls,sy=W.scale.y;W.scale.y=1;W.updateMatrixWorld(true);f.forEach(o=>W.attach(o));W.scale.y=sy;W.visible=true;}};
+    if(m&&m.color&&m.color.getHexString()==='ededea'&&Math.abs(b.min.x-8.85)<.1&&Math.abs(b.max.z-31.27)<.1)f.push(o);});const W=LV.B.walls,sy=W.scale.y;W.scale.y=1;W.updateMatrixWorld(true);f.forEach(o=>{if(!o.userData._padre)o.userData._padre=o.parent;W.attach(o);});W.scale.y=sy;W.visible=true;}};
 // piano terra aperto (Michele 15/10): via tetti, tegole e scale (quella dell'8, quella del 12 e quella della rampa a est con la ringhiera)
 const tettiScaleVia=(id='T')=>{const G=id==='T'?[LV.T,LV.B]:[LV[id]],Y=LV[id].grp.position.y; /* quote relative al pavimento del piano */
   // gradini: almeno 3 pezzi uguali e sottili, in fila, ognuno a un'altezza diversa
@@ -159,7 +162,8 @@ vediPiano.camino2=()=>{const via=[];LV['2'].grp.traverse(o=>{if(!o.isMesh||!o.vi
 // dalle linee del DWG (pianta/pianta_<livello>.json, generata con pianta/gen.py), tagliati a 1,10 m come una pianta,
 // con finestre, scale e nomi dei vani. Il rendering resta com'e'.
 const PIANTE={},TAGLIO=1.1;window.PIANTE=PIANTE; /* veloce.js aspetta le piante prima di fondere i pezzi */
-const piantaDWG=id=>{if(PIANTE[id]||!LV[id])return;PIANTE[id]='carica';
+let pianteAttive=PAG!=='piani';const NASC={};
+const piantaDWG=id=>{if(PIANTE[id]&&PIANTE[id]!=='carica'){PIANTE[id].visible=true;if(NASC[id])NASC[id]();return;}if(PIANTE[id]||!LV[id])return;PIANTE[id]='carica';
  fetch('pianta/pianta_'+id+'.json?v=10').then(r=>r.json()).then(P=>{const L=LV[id],G=new THREE.Group();G.name='piantaDWG';
   const forma=r=>{const sh=new THREE.Shape(r[0].map(([x,z])=>new THREE.Vector2(x,-z)));for(const h of r.slice(1))sh.holes.push(new THREE.Path(h.map(([x,z])=>new THREE.Vector2(x,-z))));return sh;};
   const estrudi=(rs,h,mats,y0=0)=>{const g=new THREE.ExtrudeGeometry(rs.map(forma),{depth:h,bevelEnabled:false,curveSegments:1});g.rotateX(-Math.PI/2);const m=new THREE.Mesh(g,mats);m.position.y=y0;m.castShadow=m.receiveShadow=true;return m;};
@@ -176,6 +180,7 @@ const piantaDWG=id=>{if(PIANTE[id]||!LV[id])return;PIANTE[id]='carica';
   for(const [x,z,t] of P.testi){const c=document.createElement('canvas'),k=c.getContext('2d'),fs=56;k.font='600 '+fs+'px system-ui,sans-serif';const w=Math.ceil(k.measureText(t).width)+20;c.width=w;c.height=fs+20;k.font='600 '+fs+'px system-ui,sans-serif';k.fillStyle='rgba(60,72,66,.85)';k.textBaseline='middle';k.fillText(t,10,c.height/2);
    const tx=new THREE.CanvasTexture(c);tx.anisotropy=4;const hgt=.32,pl=new THREE.Mesh(new THREE.PlaneGeometry(hgt*c.width/c.height,hgt),new THREE.MeshBasicMaterial({map:tx,transparent:true,depthWrite:false}));pl.rotation.x=-Math.PI/2;pl.position.set(x+hgt*c.width/c.height/2,.035,z);G.add(pl);}
   G.position.y=0;L.grp.add(G);PIANTE[id]=G;
+  NASC[id]=()=>{
   // al posto dei muri del rendering: via muri, finestre e infissi del rendering dentro la sagoma dell'edificio
   const sag=P.muri.map(r=>r[0]);const dentro=(x,z)=>sag.some(poly=>{let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const [xi,zi]=poly[i],[xj,zj]=poly[j];if((zi>z)!==(zj>z)&&x<(xj-xi)*(z-zi)/(zj-zi)+xi)c=!c;}return c;});
   const infissi=new Set(['ededea','f3f2ee','030202','e9e9e6','d7d3c8','d2d8de','1f140c','151515','e8e2cf','2b2e32','10181d','4a2e1a','594033','c4c8cc','8e8c86']);const Y=L.grp.position.y;let n=0;
@@ -191,12 +196,32 @@ const piantaDWG=id=>{if(PIANTE[id]||!LV[id])return;PIANTE[id]='carica';
    const scala1112=T_&&c.x>-6.4&&c.x<-4.5&&c.z>4.5&&c.z<8.4&&b.min.y-Y>.4; /* muro sospeso sopra la scala fra il 3 e il 4 (Michele 16/10 sera) */
    const sospeso=T_&&(h==='d4d6d8'||h==='d7d3c8'||h==='9c9a92')&&b.min.y-Y>.7&&b.max.y-b.min.y<.2&&c.x>4&&c.x<13&&c.z>6&&c.z<14.6;
    if(alto||scala8||sospeso||scala1112){o.visible=false;n++;}});
-  console.log('pianta DWG',id,'muri',P.muri.length,'finestre',P.finestre.length,'nascosti del rendering',n);
+  console.log('pianta DWG',id,'muri',P.muri.length,'finestre',P.finestre.length,'nascosti del rendering',n);};
+  if(pianteAttive)NASC[id]();else G.visible=false;
   if(window.RV)RV.forza=Math.max(RV.forza||0,60);
  }).catch(e=>{console.warn('pianta DWG',e);PIANTE[id]=null;});};
 // ogni fotogramma: con la pianta DWG attiva i muri del rendering restano spenti
-const _rPianta=renderer.render.bind(renderer);renderer.render=(sc,ca)=>{for(const id in PIANTE){const G=PIANTE[id];if(G&&G!=='carica'&&LV[id]){LV[id].walls.visible=false;LV[id].mass.visible=false;}}_rPianta(sc,ca);};
-if(PAG==='piano'){showEdificio=()=>VAI('./');showPiani=()=>VAI('piani/');openLevel=id=>id===LIV?vediPiano(id):VAI(SLUG[id]);openApt=(n,f)=>aptQui(n)?_openApt(n,f):VAI(SLUG[lvApt(n)]+'?apt='+n);}
+const _rPianta=renderer.render.bind(renderer);renderer.render=(sc,ca)=>{for(const id in PIANTE){const G=PIANTE[id];if(pianteAttive&&G&&G!=='carica'&&G.visible&&LV[id]){LV[id].walls.visible=false;LV[id].mass.visible=false;}}_rPianta(sc,ca);};
+// 17/10 (Michele): nelle pagine dei piani si passa da piano terra a primo piano SENZA cambiare pagina (il modello e' gia' tutto caricato)
+const cambiaPiano=k=>{if(k!==LIV){LIV=k;if(window.SITO)SITO.livello=k;try{history.replaceState(null,'',new URL(SLUG[k],document.baseURI).pathname);}catch(e){}document.title=(k==='T'?'Piano terra':'Primo piano')+' · Giardini di Sacrofano';}vediPiano(k);};
+const pianoDi=id=>id==='B'?'T':id==='2'?'1':id;
+if(PAG==='piano'){showEdificio=()=>VAI('./');showPiani=()=>VAI('piani/');openLevel=id=>{const k=pianoDi(id);if(k==='T'||k==='1')cambiaPiano(k);else VAI(SLUG[id]);};openApt=(n,f)=>{if(aptQui(n))return _openApt(n,f);const k=pianoDi(lvApt(n));if(k==='T'||k==='1'){cambiaPiano(k);return _openApt(n,f);}VAI(SLUG[lvApt(n)]+'?apt='+n);};}
+
+// 17/10 (Michele): da Esplora piani, cliccando Piano terra o Primo piano si resta sulla stessa pagina. Entrando in un piano si
+// ricorda com'era tutto nella vista dei piani (cosa si vede e cosa no) e tornando indietro si rimette tutto com'era.
+if(PAG==='piani'){let foto=null,qui=null;
+ const entra=k=>{try{hotLevel(null);}catch(e){}if(!window.__plasticoOK){setTimeout(()=>entra(k),200);return;} /* prima finisce l'apertura del plastico */
+  if(!qui){foto=new Map();scene.traverse(o=>foto.set(o,o.visible));
+   scene.traverse(o=>{if(o.name==='fuso'&&o.visible){o.visible=false;o.userData._spento=1;}});scene.traverse(o=>{if(o.userData.fusoIn&&o.userData.fusoIn.userData._spento)o.visible=true;}); /* i pezzi fusi tornano separati: il piano li toglie uno per uno */
+   pianteAttive=true;window.__pianoAperto=true;}
+  qui=k;Object.values(PIANTE).forEach(G=>{if(G&&G!=='carica')G.visible=false;});vediPiano(k);};
+ const esci=()=>{if(!qui)return;qui=null;pianteAttive=false;window.__pianoAperto=false;
+  Object.values(PIANTE).forEach(G=>{if(G&&G!=='carica')G.visible=false;});
+  scene.traverse(o=>{const P=o.userData._padre;if(P&&o.parent!==P){const W=o.parent,sy=W.scale.y;W.scale.y=1;W.updateMatrixWorld(true);P.attach(o);W.scale.y=sy;}});
+  foto.forEach((v,o)=>{if(o===ground||o===landscapeGroup)return;o.visible=v;o.userData._nascPiano=0;o.userData._spento=0;});if(window.RV)RV.forza=Math.max(RV.forza||0,60);};
+ openLevel=id=>{const k=pianoDi(id);if(k==='T'||k==='1')entra(k);else VAI(SLUG[id]);};
+ openApt=(n,f)=>{const k=pianoDi(lvApt(n));if(k!=='T'&&k!=='1')return VAI(SLUG[lvApt(n)]+'?apt='+n);if(qui!==k)entra(k);return _openApt(n,f);};
+ showPiani=()=>{esci();_showPiani();const m=innerWidth<720;camTo(m?[10,62,170]:[20,50,140],m?[2,14,6]:[2,13,2]);}; /* stessa inquadratura della fine dell'apertura */}
 
 // ---------- piani tagliati per piano (Michele 15/10, "come Fruit Ninja") ----------
 // tutto resta com'era, ma ogni pezzo va col suo piano: quello che tocca terra e' del piano terra; il resto si taglia alle quote
@@ -208,7 +233,7 @@ if(PAG==='piani'||PAG==='piano'){
  // (GSAP, circa 2,5 s); alla fine compaiono i nomi dei piani. Un clic o un tocco durante l'animazione salta alla fine.
  const apriPlastico=m=>{
   const camFin=m?[10,62,170]:[20,50,140],tgtFin=m?[2,14,6]:[2,13,2];
-  const fine=()=>{_showPiani();camTo(camFin,tgtFin,1);mostraNomi();};
+  const fine=()=>{_showPiani();camTo(camFin,tgtFin,1);mostraNomi();window.__plasticoOK=true;};
   const g=window.gsap;
   if(!g||(typeof S!=='undefined'&&S.reduced)){fine();return;}
   const camIn=m?[12,34,104]:[16,24,78],tgtIn=m?[2,2,6]:[2,2,2];
@@ -243,7 +268,7 @@ if(PAG==='piani'||PAG==='piano'){
   g.fromTo(bs,{opacity:0,x:-10},{opacity:1,x:0,duration:.5,stagger:.12,ease:'power2.out',clearProps:'transform'});};
  // passando sopra un piano si illumina; il 14 si accende insieme al piano terra
  if(PAG==='piani'&&typeof hotLevel==='function'){const _hl=hotLevel;hotLevel=function(id){const k=id==='B'?'T':id;_hl(k);if(LV.B){const c=k==='T'?(S.dir==="A"?0xd4efe0:0x2f5a43):PAL[S.dir].wall;LV.B.m.mass.color.set(c);LV.B.m.slab.color.set(k==='T'?c:PAL[S.dir].slab);}if(window.RV)RV.forza=Math.max(RV.forza||0,3);};}
- const affetta=()=>{
+ let affettato=false;const affetta=()=>{if(affettato)return;affettato=true; /* una volta sola */
   const gruppi=Object.values(LV).map(L=>L.grp),dellaCasa=o=>{let p=o;while(p){if(gruppi.includes(p))return true;p=p.parent;}return false;};
   // per tagliare servono i piani alla loro quota vera
   Object.values(LV).forEach(L=>{L._yPrima=L.grp.position.y;L.grp.position.y=L.base;});if(typeof connectionsGroup!=='undefined'&&connectionsGroup)connectionsGroup.position.y=0;scene.updateMatrixWorld(true);
@@ -320,8 +345,47 @@ if(PAG==='piani'||PAG==='piano'){
     const sporge12=o.parent===LV['T'].grp&&h==='ededea'&&c.x>-8.4&&c.x<-4.4&&c.z>4.3&&c.z<7.4&&b.max.y>2.89&&b.max.y<3.6&&b.max.x-b.min.x<2.5;
     if(rete||basso||filo||dietro12||giardino1||sporge12){o.visible=false;nv++;}});console.log('piani: tolti recinzioni e cordoli',nv);}
   if(window.RV)RV.forza=Math.max(RV.forza,90);console.log('affetta',pezzi.length,'tagli',tagli.length);};
- addEventListener('ap-sito-pronto',()=>setTimeout(affetta,50));
+ addEventListener('ap-sito-pronto',()=>{const t0=performance.now();const via=()=>{if(!window.__fotoFatto&&performance.now()-t0<180000)return setTimeout(via,200);affetta();};setTimeout(via,50);}); /* 17/10: si taglia solo a ritocchi finiti */
 }
+
+// 17/10 (Michele): nei piani i numeri e la scritta "immobile a reddito" non devono finire uno sopra l'altro. Ogni etichetta
+// parte dal suo punto; se tocca un'altra, le due si scostano quel tanto che basta per leggersi.
+if(PAG==='piani'||PAG==='piano'){
+ const _place=place,BASE=new Map(),OFF=new Map(),DIS=new Map();
+ place=function(el,x,y,z,dx){_place(el,x,y,z,dx);if(!el.classList||!el.classList.contains('ul'))return;const L=parseFloat(el.style.left),T=parseFloat(el.style.top);BASE.set(el,[L,T]);const t=OFF.get(el)||[0,0],d=DIS.get(el)||[0,0];d[0]+=(t[0]-d[0])*.2;d[1]+=(t[1]-d[1])*.2;if(Math.abs(d[0])<.3&&Math.abs(d[1])<.3&&!t[0]&&!t[1]){DIS.delete(el);return;}DIS.set(el,d);el.style.left=(L+d[0])+'px';el.style.top=(T+d[1])+'px';};
+ const separa=()=>{const duplex=document.body.classList.contains('duplex');
+  const R=[...BASE.keys()].filter(e=>!e.hidden&&e.style.visibility!=='hidden'&&e.isConnected).map(e=>{const [x,y]=BASE.get(e),w=e.offsetWidth+8,h=e.offsetHeight+8,duo=(e.classList.contains('duo')&&!duplex)||e.classList.contains('rent'); /* "2 livelli" e "a reddito" stanno sotto il numero */
+   return {e,x,y:y+(duo?10:0),w,h:duo?h+20:h,ox:0,oy:0};});
+  for(let it=0;it<40;it++){let mosso=false;
+   for(let i=0;i<R.length;i++)for(let j=i+1;j<R.length;j++){const a=R[i],b=R[j],ax=a.x+a.ox,ay=a.y+a.oy,bx=b.x+b.ox,by=b.y+b.oy;
+    const px=(a.w+b.w)/2-Math.abs(ax-bx),py=(a.h+b.h)/2-Math.abs(ay-by);if(px<=0||py<=0)continue;mosso=true;
+    if(px<py){const d=(ax<bx||(ax===bx&&i<j)?-1:1)*(px/2+.5);a.ox+=d;b.ox-=d;}else{const d=(ay<by||(ay===by&&i<j)?-1:1)*(py/2+.5);a.oy+=d;b.oy-=d;}}
+   if(!mosso)break;}
+  OFF.clear();R.forEach(r=>{if(r.ox||r.oy)OFF.set(r.e,[r.ox,r.oy]);});};
+ const giro=()=>{try{separa();}catch(e){}requestAnimationFrame(giro);};requestAnimationFrame(giro);
+ // l'immobile a reddito mostra il suo numero come gli altri, con il bordo giallo, e sotto la piccola scritta "a reddito"
+ const st=document.createElement('style');st.textContent='.ul.rent{width:34px;padding:0;border-radius:50%;font-family:var(--f-display);font-size:19px;font-weight:400;letter-spacing:0}.ul.rent::after{content:"a reddito";position:absolute;left:50%;top:100%;transform:translateX(-50%);margin-top:4px;font-family:var(--f-ui);font-size:10px;font-weight:700;letter-spacing:.06em;white-space:nowrap;color:var(--rent-ink);background:var(--rent-bg);padding:1px 6px;border-radius:3px}';document.head.appendChild(st);
+ const numeri=()=>document.querySelectorAll('.ul.rent').forEach(b=>{const m=(b.getAttribute('aria-label')||'').match(/\d+/);if(m&&b.textContent!==m[0])b.textContent=m[0];});
+ numeri();addEventListener('ap-sito-pronto',()=>setTimeout(numeri,0));
+}
+// 19/10 (Michele): in Esplora piani, passando col mouse sopra un piano si colora di verde (il verde dei LED) solo il nome del piano
+// accanto al plastico e la riga nella lista; sul modello niente luci aggiunte. La zona notte dell'11 conta come primo piano.
+if(PAG==='piani'&&typeof hotLevel==='function'){const _hl2=hotLevel;hotLevel=function(id){_hl2(id==='2'?'1':id);};
+ const st=document.createElement('style');st.textContent='.fl{transition:box-shadow .25s,border-color .25s}.fl:hover,.fl.hot{border-color:var(--led);box-shadow:0 0 0 1.5px var(--led),0 0 16px -2px var(--led)}.fl:hover b,.fl.hot b{background:var(--led);color:#fff}#ctx .row[data-l]{transition:background .2s,box-shadow .2s}#ctx .row[data-l]:hover{box-shadow:inset 3px 0 0 var(--led)}';document.head.appendChild(st);
+}
+
+// 17/10: le correzioni qui sotto partono solo quando foto.js ha finito tutti i ritocchi (prima venivano rifatte o perse)
+const dopoFoto=f=>{if(window.__fotoFatto)return f();addEventListener('foto-fatto',()=>f(),{once:true});};
+// 17/10 (Michele, foto): sotto il 4 il pilastro del portico era disegnato due volte nello stesso punto (muro del piano terra
+// + pezzo a parte, x -4,84/-4,65 z 4,85/7,25): le due superfici sovrapposte facevano i quadretti. Resta il muro, via la copia.
+dopoFoto(()=>{const v=new THREE.Vector3(),w=new THREE.Vector3();scene.updateMatrixWorld(true);
+ scene.traverse(o=>{if(!o.isMesh||o.name)return;const m=Array.isArray(o.material)?o.material[0]:o.material;if(!m||!m.color||m.color.getHexString()!=='ededea')return;
+  const b=new THREE.Box3().setFromObject(o);if(v.set(-4.84,0,4.85).distanceTo(b.min)<.03&&w.set(-4.65,2.6,7.25).distanceTo(b.max)<.03)o.visible=false;});
+ // 17/10 (Michele, foto): timpano a est sotto il tetto alto vicino al camino dell'11 (x 6,17): 74 strisce da 8 cm appoggiate sul muro
+ // che ha gia' la sua forma a triangolo facevano le righe oblique. Resta il muro, via le strisce.
+ scene.traverse(o=>{if(!o.isMesh||o.name)return;const m=Array.isArray(o.material)?o.material[0]:o.material;if(!m||!m.color||![PAL.A.wall,PAL.B.wall,0xededea].includes(m.color.getHex()))return; /* bianco di giorno, colore del muro di sera */const b=new THREE.Box3().setFromObject(o);if(b.max.x-b.min.x<.02&&Math.abs(b.min.x-6.17)<.03&&b.min.y>8.4&&b.max.y<9.2&&b.min.z>-5.1&&b.max.z<.9)o.visible=false;});
+},{once:true});
+
 
 // ---------- menu ----------
 const freccia='<svg viewBox="0 0 11 7"><path d="M1 1l4.5 4.5L10 1"/></svg>';
@@ -330,9 +394,9 @@ const sulPiano=id=>PAG==='piano'&&LIV===id, aptQui=n=>PAG==='piano'&&LEVELS[LIV]
 const lvApt=n=>APT[n].lv;
 const azioni={
  iniziale:()=>PAG==='home'?showEdificio():VAI('./'),
- piani:()=>PAG==='piani'?_showPiani():VAI('piani/'), T:()=>sulPiano('T')?vediPiano('T'):VAI(SLUG.T), 1:()=>sulPiano('1')?vediPiano('1'):VAI(SLUG['1']), 2:()=>sulPiano('2')?vediPiano('2'):VAI(SLUG['2']), B:()=>sulPiano('B')?vediPiano('B'):VAI(SLUG.B),
+ piani:()=>PAG==='piani'?showPiani():VAI('piani/'), T:()=>PAG==='piano'||PAG==='piani'?openLevel('T'):VAI(SLUG.T), 1:()=>PAG==='piano'||PAG==='piani'?openLevel('1'):VAI(SLUG['1']), 2:()=>PAG==='piano'?openLevel('2'):VAI(SLUG['2']), B:()=>PAG==='piano'?openLevel('B'):VAI(SLUG.B),
  park:n=>{if(PAG!=='home')return VAI('./?park='+n);showEdificio();const [p,t]=PARK[n],k=mob()?1.9:1,pp=p.map((v,i)=>t[i]+(v-t[i])*k);setTimeout(()=>camTo(pp,t,1300),30);},
- apt:n=>aptQui(n)?_openApt(+n):VAI(SLUG[lvApt(n)]+'?apt='+n), contatti:()=>PAG==='contatti'?null:VAI('contatti/'),
+ apt:n=>PAG==='piano'||PAG==='piani'?openApt(+n):VAI(SLUG[lvApt(n)]+'?apt='+n), contatti:()=>PAG==='contatti'?null:VAI('contatti/'),
  vista:v=>{if(PAG!=='home')return VAI('./?vista='+v);showEdificio();const V={sud:[[2,12,46],[0,2,2]],nord:[[-6,20,-44],[0,2,-1]],alto:[[0,58,8],[0,0,2]]}[v],k=mob()?1.6:1,pp=V[0].map((x,i)=>V[1][i]+(x-V[1][i])*k);setTimeout(()=>camTo(pp,V[1],1200),30);},
  cerca:v=>{const [k,x]=v.split(':');if(k==='apt')azioni.apt(x);else if(k==='lv')(x==='piani'?azioni.piani():azioni[x]());else if(k==='park')azioni.park(x);}
 };

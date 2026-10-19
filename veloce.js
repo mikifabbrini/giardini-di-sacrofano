@@ -49,7 +49,7 @@ function fondi(){
  console.log('veloce: fusi',n,'pezzi in',[...B.values()].filter(b=>b.o.length>1).length,'oggetti,',Math.round(performance.now()-t0),'ms');
  window.__veloce={fusi:n,gruppi:[...B.values()].filter(b=>b.o.length>1).length};}
 // quando partire: a scena pronta; nelle pagine dei piani dopo il taglio dei piani e il caricamento delle piante dal DWG
-function pronto(){const t0=performance.now();const attendi=()=>{let carica=false;try{if(window.PIANTE)for(const k in PIANTE)if(PIANTE[k]==='carica')carica=true;}catch(e){}
+function pronto(){const t0=performance.now();const attendi=()=>{if(window.__pianoAperto){setTimeout(attendi,300);return;} /* Esplora piani: si fonde solo nella vista dei piani */if(!window.__fotoFatto&&performance.now()-t0<180000){setTimeout(attendi,300);return;} /* 19/10: prima finiscono tutti i materiali veri, poi si fonde (prima a 25 s si fondevano anche i tetti vecchi) */let carica=false;try{if(window.PIANTE)for(const k in PIANTE)if(PIANTE[k]==='carica')carica=true;}catch(e){}
  const minimo=PAG==='home'?600:1500;if((carica||performance.now()-t0<minimo)&&performance.now()-t0<15000){setTimeout(attendi,150);return;}
  try{fondi();}catch(e){console.warn('veloce',e);}};attendi();}
 if(window.__apPronto)pronto();else addEventListener('ap-sito-pronto',pronto,{once:true});
