@@ -753,10 +753,10 @@ function renderCtx(){
   if(landscapeGroup)landscapeGroup.visible=contextOn&&S.view==='edificio';ground.visible=contextOn&&S.view==='edificio';
   crumbs(); const el=$("#ctx"); el.hidden=S.view==="scheda";
   if(S.view==="edificio"){
-    el.innerHTML=`<span class="eyebrow">Via Monterosso 17 · Studio di progetto</span><h1>Giardini di Sacrofano</h1>
-      <p>Quattordici appartamenti, terrazzi e giardini. Esplora la ricostruzione dopo i lavori e consulta le planimetrie di progetto.</p>
+    el.innerHTML=`<span class="eyebrow">Via Monterosso 17 · Sacrofano</span><h1>Giardini di Sacrofano</h1>
+      <p>Consulta tutti gli appartamenti piano per piano: prezzo, metri quadri e caratteristiche di ognuno.</p>
       <button class="cta" id="go">Esplora i piani</button>`;
-    $("#go").onclick=showPiani;
+    $("#go").onclick=()=>showPiani(); /* 19/10: il tasto porta alla pagina Esplora piani */
   } else if(S.view==="piani"){
     el.innerHTML=`<span class="eyebrow">Scegli un livello</span><h1>I piani</h1><div class="list">${["1","T"].map(id=>`<button class="row" data-l="${id}"><span class="k">${LEVELS[id].short}</span><span class="t"><b>${LEVELS[id].name}</b><span>${LEVELS[id].desc}</span></span><span class="r">›</span></button>`).join("")}</div><button class="back" id="bk">‹ Edificio intero</button>`;
     el.querySelectorAll("[data-l]").forEach(b=>{b.onclick=()=>openLevel(b.dataset.l); b.onmouseenter=()=>hotLevel(b.dataset.l); b.onmouseleave=()=>hotLevel(null);});
@@ -1232,6 +1232,6 @@ new Promise(r=>{let fatto=false;const go=()=>{if(fatto||SITO.pagina==='contatti'
 }).catch(err=>{ $("#ctx").innerHTML=`<h1>Modello non caricato</h1><p>Il file model.json non è raggiungibile (${err.message}). Apri il file index.html nella cartella completa fase3-astra/prototipo.</p>`; });
 </script>
 
-<script src="apertura/apertura.js?v=r11"></script><script src="veloce.js?v=r2"></script>
+<script src="apertura/apertura.js?v=r12"></script><script src="veloce.js?v=r2"></script>
 <script src="foto.js?v=r3"></script>
 </html>
